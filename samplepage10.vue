@@ -16,11 +16,7 @@
           <p class="conTitle">
             <span>공지 사항 </span>
             <span class="fr">
-              <a
-                class="btnType blue"
-                href="javascript:fNoticeModal(${nullNum});"
-                name="modal"
-              >
+              <a class="btnType blue" name="modal" @click="newreg()">
                 <span>신규등록</span></a
               >
             </span>
@@ -110,7 +106,9 @@
                 <template v-else>
                   <tr v-for="item in items" :key="item.noticeNo">
                     <td>{{ item.noticeNo }}</td>
-                    <td>{{ item.noticeTitle }}</td>
+                    <td @click="notcemod(item.noticeNo)">
+                      {{ item.noticeTitle }}
+                    </td>
                     <td>{{ item.noticeRegdate }}</td>
                     <td>{{ item.loginName }}</td>
                   </tr>
@@ -143,6 +141,8 @@
 </template>
 
 <script>
+import { openModal } from 'jenesius-vue-modal';
+import noticepop from './noticepop.vue';
 import Paginate from 'vuejs-paginate-next';
 
 export default {
@@ -155,6 +155,7 @@ export default {
       currentPage: 1,
       pageSize: 10,
       totalCnt: 0,
+      action: '',
     };
   },
   components: {
@@ -202,6 +203,36 @@ export default {
         result = result + 1;
         return result;
       }
+    },
+    newreg: async function () {
+      this.action = 'I';
+
+      const modal = await openModal(noticepop, {
+        title: '공지사항 등록',
+        noticeNo: '',
+        action: this.action,
+      });
+
+      modal.onclose = () => {
+        //alert('창 닫음');
+        this.search();
+        //return false; //Modal will not be closed
+      };
+    },
+    notcemod: async function (pnoticeNo) {
+      this.action = 'U';
+
+      const modal = await openModal(noticepop, {
+        title: '공지사항 수정',
+        noticeNo: pnoticeNo,
+        action: this.action,
+      });
+
+      modal.onclose = () => {
+        //alert('창 닫음');
+        this.search();
+        //return false; //Modal will not be closed
+      };
     },
   },
 };
